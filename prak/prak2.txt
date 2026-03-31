@@ -1,0 +1,228 @@
+docker --version
+
+docker pull postgres
+
+docker images - проверка что образ скачан
+
+docker run --name my-postgres -e POSTGRES_PASSWORD=mysecretpassword -d postgres
+
+docker stop my-postgres
+
+docker ps -a - проверить что контейнер остановлен
+
+docker start my-postgres - повторный запуск с уже существующим контейнером
+
+docker ps - проверка статуса
+
+docker exec -it my-postgres psql -U postgres - подключение к контейнеру с бд
+
+-- Показать список баз данных
+\l
+
+-- Подключиться к базе данных
+\c postgres
+
+-- Показать список таблиц (пока пусто)
+\dt
+
+-- Создать тестовую таблицу
+CREATE TABLE test_table (id INT, name VARCHAR(50));
+
+-- Посмотреть таблицы снова
+\dt
+
+-- Выйти
+\q
+
+docker run --name db1 -e POSTGRES_PASSWORD=password1 -d postgres
+docker run --name db2 -e POSTGRES_PASSWORD=password2 -d postgres
+docker run --name db3 -e POSTGRES_PASSWORD=password3 -d postgres
+
+docker exec -it db1 bash - подключиться к контейнеру через баш
+
+# Посмотреть содержимое текущей директории
+ls -la
+
+# Посмотреть структуру каталогов
+pwd  # показать текущий путь
+ls /  # посмотреть корневую директорию
+
+# Для PostgreSQL посмотрите файлы данных
+ls /var/lib/postgresql/data/
+
+# Создать файл
+echo "Hello from Docker container" > test.txt
+
+# Проверить, что файл создан
+cat test.txt
+ls -la test.txt
+
+# Попробуйте удалить какой-нибудь файл (не критичный)
+rm test.txt  # удалить созданный файл
+
+# Проверьте, что файл удалён
+ls test.txt  # должно быть "No such file or directory"
+
+exit 
+
+docker rm db1 db2 db3 - удаление контейнеров 
+
+
+
+✅ Шаг 1: Скачать образ Redis
+bash
+docker pull redis
+✅ Шаг 2: Запустить контейнер с Redis
+bash
+docker run --name my-redis1 -d redis
+✅ Шаг 3: Посмотреть список контейнеров
+bash
+docker ps
+✅ Шаг 4: Остановить контейнер
+bash
+docker stop my-redis1
+✅ Шаг 5: Запустить контейнер снова
+bash
+docker start my-redis1
+✅ Шаг 6: Подключиться к Redis и продемонстрировать работу
+bash
+# Подключиться к клиенту Redis
+docker exec -it my-redis1 redis-cli
+
+# Внутри redis-cli выполнить:
+PING           # Проверить подключение - должен ответить PONG
+SET key1 "Hello Docker"  # Создать ключ
+GET key1       # Получить значение
+KEYS *         # Показать все ключи (аналог "списка таблиц")
+INFO server    # Показать информацию о сервере
+EXIT           # Выйти
+✅ Шаг 7: Запустить 3 контейнера одновременно
+bash
+# Если первый уже запущен, создадим ещё два
+docker run --name my-redis2 -d redis
+docker run --name my-redis3 -d redis
+
+# Проверить, что все 3 запущены
+docker ps
+✅ Шаг 8: Подключиться к контейнеру и поработать с файлами
+bash
+# Подключиться к одному из контейнеров через bash
+docker exec -it my-redis1 bash
+
+# Внутри контейнера выполнить:
+pwd                    # Показать текущую директорию
+ls -la /               # Посмотреть список файлов в корне
+echo "test" > /tmp/test.txt  # Создать файл
+cat /tmp/test.txt      # Проверить содержимое
+ls -la /data           # Посмотреть данные Redis (если есть)
+rm /tmp/test.txt       # Удалить файл
+ls /tmp/               # Проверить, что файл удалён
+exit                   # Выйти из контейнера
+📝 Полный скрипт для выполнения всего задания:
+bash
+#!/bin/bash
+echo "=== Начало выполнения задания с Redis ==="
+
+echo "1. Скачиваем образ Redis..."
+docker pull redis
+
+echo -e "\n2. Запускаем первый контейнер..."
+docker run --name redis1 -d redis
+
+echo -e "\n3. Смотрим список контейнеров:"
+docker ps
+
+echo -e "\n4. Останавливаем контейнер..."
+docker stop redis1
+
+echo -e "\n5. Запускаем контейнер снова..."
+docker start redis1
+
+echo -e "\n6. Подключаемся к Redis и демонстрируем работу:"
+echo "=== Работа с Redis ==="
+docker exec redis1 redis-cli PING
+docker exec redis1 redis-cli SET test_key "Hello World"
+docker exec redis1 redis-cli GET test_key
+docker exec redis1 redis-cli KEYS '*'
+
+echo -e "\n7. Запускаем ещё 2 контейнера..."
+docker run --name redis2 -d redis
+docker run --name redis3 -d redis
+
+echo -e "\n8. Проверяем все 3 контейнера:"
+docker ps
+
+echo -e "\n9. Подключаемся к контейнеру и работаем с файлами:"
+echo "=== Работа с файлами внутри контейнера ==="
+docker exec redis1 bash -c "echo 'Файл создан внутри контейнера' > /test.txt"
+docker exec redis1 bash -c "cat /test.txt"
+docker exec redis1 bash -c "ls -la / | grep test.txt"
+docker exec redis1 bash -c "rm /test.txt"
+docker exec redis1 bash -c "echo 'Файл удалён, проверяем:' && ls /test.txt 2>/dev/null || echo 'Файл не найден'"
+
+echo -e "\n10. Очистка (опционально):"
+echo "Для удаления контейнеров выполните:"
+echo "docker stop redis1 redis2 redis3"
+echo "docker rm redis1 redis2 redis3"
+🎯 Краткая шпаргалка команд:
+bash
+# Основные команды
+docker pull redis                  # Скачать Redis
+docker run --name ИМЯ -d redis    # Запустить контейнер
+docker ps                         # Показать запущенные контейнеры
+docker ps -a                      # Показать все контейнеры
+docker stop ИМЯ                   # Остановить контейнер
+docker start ИМЯ                  # Запустить остановленный
+docker exec -it ИМЯ redis-cli     # Подключиться к Redis
+docker exec -it ИМЯ bash          # Подключиться к bash контейнера
+
+# Команды внутри redis-cli
+PING                              # Проверить подключение
+SET ключ значение                 # Создать запись
+GET ключ                          # Получить запись
+KEYS *                            # Показать все ключи
+INFO                              # Показать информацию
+EXIT                              # Выйти
+
+# Команды внутри bash контейнера
+pwd                               # Текущая директория
+ls -la                            # Список файлов
+echo текст > файл.txt             # Создать файл
+cat файл.txt                      # Показать файл
+rm файл.txt                       # Удалить файл
+📊 Пример вывода для отчёта:
+bash
+# 1. После docker pull redis:
+Using default tag: latest
+latest: Pulling from library/redis
+Digest: sha256:...
+
+# 2. После docker ps:
+CONTAINER ID   IMAGE     COMMAND                  CREATED         STATUS         PORTS      NAMES
+abc123def456   redis     "docker-entrypoint.s…"   5 seconds ago   Up 4 seconds   6379/tcp   redis1
+
+# 3. Внутри redis-cli:
+127.0.0.1:6379> PING
+PONG
+127.0.0.1:6379> SET test "Hello"
+OK
+127.0.0.1:6379> GET test
+"Hello"
+
+# 4. Внутри bash контейнера:
+root@abc123def456:/data# echo "test" > file.txt
+root@abc123def456:/data# cat file.txt
+test
+root@abc123def456:/data# rm file.txt
+root@abc123def456:/data# ls file.txt
+ls: cannot access 'file.txt': No such file or directory
+⚡ Выполнение за 5 минут:
+bash
+# Быстрое выполнение всех пунктов
+docker pull redis
+docker run --name r1 -d redis && docker run --name r2 -d redis && docker run --name r3 -d redis
+docker ps
+docker stop r2 && docker start r2
+docker exec r1 redis-cli PING
+docker exec r1 redis-cli SET demo "test" && docker exec r1 redis-cli GET demo
+docker exec r1 bash -c "echo 'file' > /tmp.txt && cat /tmp.txt && rm /tmp.txt"
