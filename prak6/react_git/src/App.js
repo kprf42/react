@@ -1,14 +1,22 @@
-import './App.css';
+import { HashRouter, Routes, Route, Link } from 'react-router-dom';
+import Home from './Home';
+import House from './House';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <p>
-          hello world
-        </p>
-      </header>
-    </div>
+    <HashRouter>
+      <div>
+        <nav>
+          <Link to="/">Главная</Link>
+          {' | '}
+          <Link to="/House">О нас</Link>
+        </nav>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/House" element={<House />} />
+        </Routes>
+      </div>
+    </HashRouter>
   );
 }
 
