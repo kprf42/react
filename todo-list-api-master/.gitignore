@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Виртуальное окружение
+env/
+venv/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Docker
+*.pid
+*.pid.lock
+
+# Переменные окружения (пароли!)
+.env
+*.env
+!.env.example
+
+# Данные БД (volume на хосте)
+postgres_data/
+pgdata/
+
+# Логи
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
